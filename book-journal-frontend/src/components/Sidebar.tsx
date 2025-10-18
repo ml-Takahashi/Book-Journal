@@ -26,7 +26,7 @@ export function Sidebar({
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <h2>Collections</h2>
+        <h2>ジャンル</h2>
         <button className="ghost" type="button" onClick={onCreateGenre}>
           ＋
         </button>
@@ -39,7 +39,7 @@ export function Sidebar({
         >
           <div className="genre-label">
             <span className="material-symbol">library_books</span>
-            All Books
+            すべての本
           </div>
         </button>
         <GenreTree

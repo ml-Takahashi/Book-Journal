@@ -17,12 +17,12 @@ export function BookGallery({
   if (books.length === 0) {
     return (
       <section className="book-gallery empty">
-        <p className="empty-title">No books here yet.</p>
+        <p className="empty-title">まだ本が登録されていません。</p>
         <p className="empty-description">
-          Add a book to start capturing takeaways and build your reading atlas.
+          本を追加して、目次メモや気づきを整理し始めましょう。
         </p>
         <button className="primary" type="button" onClick={onRequestCreate}>
-          ＋ Add Book
+          ＋ 本を追加
         </button>
       </section>
     );
@@ -33,7 +33,7 @@ export function BookGallery({
       <div className="book-grid">
         {books.map((book) => {
           const isActive = book.id === selectedBookId;
-          const updated = new Date(book.updatedAt).toLocaleDateString(undefined, {
+          const updated = new Date(book.updatedAt).toLocaleDateString('ja-JP', {
             month: 'short',
             day: 'numeric',
           });
@@ -65,7 +65,7 @@ export function BookGallery({
               </div>
               <div className="card-footer">
                 <span className="material-symbol">schedule</span>
-                Updated {updated}
+                最終更新 {updated}
               </div>
             </button>
           );

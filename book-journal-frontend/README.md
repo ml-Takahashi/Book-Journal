@@ -1,21 +1,21 @@
-## Book Journal Frontend
+## 読書ジャーナル フロントエンド
 
-This project scaffolds a modern React + TypeScript interface for capturing book notes by genre. It ships with a sample library, fluid layout, and dialogs to add genres, record new books, and edit the table of contents for each title. Data lives purely in the browser for now—perfect for rapid iteration before connecting to a backend.
+ジャンルごとに本のメモを整理するための、React + TypeScript 製フロントエンド基盤です。サンプルデータ付きのモダンなUIと、ジャンル／書籍の追加ダイアログ、目次ハイライト編集機能を備えており、ブラウザのみで軽快に動作します（リロードすると状態は初期化されます）。
 
-### Getting Started
+### 開発環境の起動
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open the URL printed in the terminal (defaults to `http://localhost:5173`) to explore the app. The development server supports hot module reloading, so UI changes appear instantly.
+ターミナルに表示される URL（既定では `http://localhost:5173`）を開くとアプリを確認できます。HMR に対応しているため、UIを編集すると即座にブラウザへ反映されます。
 
-### Core Features
+### 主な機能
 
-- Nested genre sidebar with live book counts and quick add actions
-- Searchable book gallery with elegant cards and accent colours
-- Detail workspace for rich notes, tag management, and custom table-of-contents sections
-- Reusable modal system for adding books and genres
+- ジャンルを階層表示するサイドバー（冊数カウントとクイック追加ボタン付き）
+- カード形式で検索できる書籍ギャラリーと、アクセントカラーによる視認性の高いデザイン
+- 本ごとの詳細ビューで、概要・タグ・目次ハイライトを自由に編集可能
+- 書籍／ジャンルの登録に使い回せるモーダルコンポーネント
 
-Since the state is in-memory, refreshing the browser resets to the seeded demo catalogue. This keeps the experience lightweight while you iterate on backend choices.
+バックエンド未接続でも使えるよう、データはメモリ上で完結しています。将来的にAPIへ接続する場合でも、UIをそのまま活用できる構成です。

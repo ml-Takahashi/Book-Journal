@@ -59,7 +59,7 @@ export function Dialog({ open, title, onClose, children, footer }: DialogProps) 
             type="button"
             className="icon-button"
             onClick={onClose}
-            aria-label="Close dialog"
+            aria-label="ダイアログを閉じる"
           >
             <span className="material-symbol">close</span>
           </button>

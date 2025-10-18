@@ -73,7 +73,7 @@ export function BookDetail({ book, breadcrumbs }: BookDetailProps) {
       tags,
       sections: draft.sections.map((section) => ({
         ...section,
-        title: section.title.trim() || 'Untitled Section',
+        title: section.title.trim() || '無題のセクション',
         summary: section.summary.trim(),
       })),
     });
@@ -133,22 +133,19 @@ export function BookDetail({ book, breadcrumbs }: BookDetailProps) {
       <section className="book-detail empty">
         <div className="empty-state">
           <span className="material-symbol hero">menu_book</span>
-          <h2>Select a book</h2>
-          <p>
-            Choose a title from the left to review its notes, or add a new book to
-            start organizing your reading.
-          </p>
+          <h2>本を選択してください</h2>
+          <p>左のリストから本を選ぶか、新しい本を追加して整理を始めましょう。</p>
         </div>
       </section>
     );
   }
 
-  const createdDate = new Date(book.createdAt).toLocaleDateString(undefined, {
+  const createdDate = new Date(book.createdAt).toLocaleDateString('ja-JP', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
   });
-  const updatedDate = new Date(book.updatedAt).toLocaleDateString(undefined, {
+  const updatedDate = new Date(book.updatedAt).toLocaleDateString('ja-JP', {
     month: 'short',
     day: 'numeric',
   });
@@ -171,18 +168,18 @@ export function BookDetail({ book, breadcrumbs }: BookDetailProps) {
         <div className="meta">
           <span className="meta-item">
             <span className="material-symbol">calendar_today</span>
-            Added {createdDate}
+            追加日 {createdDate}
           </span>
           <span className="meta-item">
             <span className="material-symbol">schedule</span>
-            Updated {updatedDate}
+            最終更新 {updatedDate}
           </span>
         </div>
       </header>
 
       <div className="detail-body">
         <div className="field">
-          <label htmlFor="description">Overview</label>
+          <label htmlFor="description">概要</label>
           <textarea
             id="description"
             rows={5}
@@ -192,12 +189,12 @@ export function BookDetail({ book, breadcrumbs }: BookDetailProps) {
                 prev ? { ...prev, description: event.target.value } : prev,
               )
             }
-            placeholder="Capture why this book matters, standout chapters, or how you plan to apply it."
+            placeholder="この本から得た学びや実践したいこと、印象に残った章などを記録しましょう。"
           />
         </div>
 
         <div className="field">
-          <label htmlFor="tags">Tags</label>
+          <label htmlFor="tags">タグ</label>
           <input
             id="tags"
             type="text"
@@ -207,14 +204,14 @@ export function BookDetail({ book, breadcrumbs }: BookDetailProps) {
                 prev ? { ...prev, tagsInput: event.target.value } : prev,
               )
             }
-            placeholder="Separate tags with commas. e.g. storytelling, design patterns"
+            placeholder="タグはカンマで区切ります（例： 読書術, デザイン思考）"
           />
         </div>
 
         <div className="sections-header">
-          <h3>Table of Contents Highlights</h3>
+          <h3>目次ハイライト</h3>
           <button type="button" className="ghost" onClick={handleAddSection}>
-            ＋ Add Section
+            ＋ セクションを追加
           </button>
         </div>
 
@@ -229,13 +226,13 @@ export function BookDetail({ book, breadcrumbs }: BookDetailProps) {
                   onChange={(event) =>
                     handleSectionChange(section.id, 'title', event.target.value)
                   }
-                  placeholder="Section title"
+                  placeholder="セクション名"
                 />
                 <button
                   type="button"
                   className="icon-button"
                   onClick={() => handleSectionRemove(section.id)}
-                  aria-label="Remove section"
+                  aria-label="セクションを削除"
                 >
                   <span className="material-symbol">delete</span>
                 </button>
@@ -246,15 +243,15 @@ export function BookDetail({ book, breadcrumbs }: BookDetailProps) {
                 onChange={(event) =>
                   handleSectionChange(section.id, 'summary', event.target.value)
                 }
-                placeholder="Summarize key ideas, quotes, or actions for this chapter."
+                placeholder="章の要点や引用、行動アイデアなどをまとめてください。"
               />
             </div>
           ))}
           {draft.sections.length === 0 && (
             <div className="section-empty">
-              <p>No sections yet. Add highlights to build your custom table of contents.</p>
+              <p>セクションがまだありません。ハイライトを追加して自分だけの目次を作りましょう。</p>
               <button type="button" className="ghost" onClick={handleAddSection}>
-                ＋ Add Section
+                ＋ セクションを追加
               </button>
             </div>
           )}
@@ -268,7 +265,7 @@ export function BookDetail({ book, breadcrumbs }: BookDetailProps) {
           onClick={handleReset}
           disabled={!isDirty}
         >
-          Reset
+          元に戻す
         </button>
         <button
           type="button"
@@ -276,7 +273,7 @@ export function BookDetail({ book, breadcrumbs }: BookDetailProps) {
           onClick={handleSave}
           disabled={!isDirty}
         >
-          Save Notes
+          メモを保存
         </button>
       </footer>
     </section>

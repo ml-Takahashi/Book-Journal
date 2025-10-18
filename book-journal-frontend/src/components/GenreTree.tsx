@@ -75,7 +75,7 @@ function GenreTreeBranch({
             type="button"
             className={`branch-toggle ${expanded ? 'expanded' : ''}`}
             onClick={toggleExpansion}
-            aria-label={expanded ? 'Collapse genre' : 'Expand genre'}
+            aria-label={expanded ? 'ジャンルを折りたたむ' : 'ジャンルを展開する'}
           >
             <span className="material-symbol">
               {expanded ? 'expand_more' : 'chevron_right'}

@@ -97,11 +97,11 @@ export function AddBookDialog({ open, onClose }: AddBookDialogProps) {
     <Dialog
       open={open}
       onClose={onClose}
-      title="Add a Book"
+      title="本を追加"
       footer={
         <>
           <button type="button" className="ghost" onClick={onClose}>
-            Cancel
+            キャンセル
           </button>
           <button
             type="submit"
@@ -109,39 +109,39 @@ export function AddBookDialog({ open, onClose }: AddBookDialogProps) {
             className="primary"
             disabled={!hasGenres}
           >
-            Save Book
+            本を保存
           </button>
         </>
       }
     >
       {!hasGenres ? (
         <div className="empty-form">
-          <p>You need at least one genre before adding books.</p>
+          <p>本を追加する前に、少なくとも1つのジャンルを作成してください。</p>
         </div>
       ) : (
         <form id="add-book-form" className="form-stack" onSubmit={handleSubmit}>
-          <label htmlFor="book-title">Title</label>
+          <label htmlFor="book-title">タイトル</label>
           <input
             id="book-title"
             type="text"
             value={title}
             onChange={(event) => setTitle(event.target.value)}
-            placeholder="Invisible Cities"
+            placeholder="例： 不可視都市"
             required
             autoFocus
           />
 
-          <label htmlFor="book-author">Author</label>
+          <label htmlFor="book-author">著者</label>
           <input
             id="book-author"
             type="text"
             value={author}
             onChange={(event) => setAuthor(event.target.value)}
-            placeholder="Italo Calvino"
+            placeholder="例： イタロ・カルヴィーノ"
             required
           />
 
-          <label htmlFor="book-genre">Genre</label>
+          <label htmlFor="book-genre">ジャンル</label>
           <select
             id="book-genre"
             value={genreId}
@@ -155,25 +155,25 @@ export function AddBookDialog({ open, onClose }: AddBookDialogProps) {
             ))}
           </select>
 
-          <label htmlFor="book-description">Overview (optional)</label>
+          <label htmlFor="book-description">概要（任意）</label>
           <textarea
             id="book-description"
             rows={4}
             value={description}
             onChange={(event) => setDescription(event.target.value)}
-            placeholder="Why this book matters, who recommended it, first impressions…"
+            placeholder="どんな本なのか、誰から勧められたか、第一印象などを自由に記入してください。"
           />
 
-          <label htmlFor="book-tags">Tags (comma separated)</label>
+          <label htmlFor="book-tags">タグ（カンマ区切り）</label>
           <input
             id="book-tags"
             type="text"
             value={tagsInput}
             onChange={(event) => setTagsInput(event.target.value)}
-            placeholder="architecture, creativity, leadership"
+            placeholder="例： 建築, 創造性, リーダーシップ"
           />
 
-          <label htmlFor="book-color">Accent Color</label>
+          <label htmlFor="book-color">アクセントカラー</label>
           <input
             id="book-color"
             type="color"
@@ -183,22 +183,22 @@ export function AddBookDialog({ open, onClose }: AddBookDialogProps) {
 
           <div className="section-controls">
             <div className="controls-header">
-              <h3>Initial Sections</h3>
+              <h3>初期セクション</h3>
               <button type="button" className="ghost" onClick={handleAddSection}>
-                ＋ Add another section
+                ＋ セクションを追加
               </button>
             </div>
             {sections.map((section, index) => (
               <div key={section.id} className="section-draft">
                 <div className="field-inline">
                   <label htmlFor={`section-title-${section.id}`}>
-                    Section {index + 1}
+                    セクション {index + 1}
                   </label>
                   <button
                     type="button"
                     className="icon-button"
                     onClick={() => handleRemoveSection(section.id)}
-                    aria-label="Remove section"
+                    aria-label="セクションを削除"
                   >
                     <span className="material-symbol">delete</span>
                   </button>
@@ -210,7 +210,7 @@ export function AddBookDialog({ open, onClose }: AddBookDialogProps) {
                   onChange={(event) =>
                     handleSectionChange(section.id, 'title', event.target.value)
                   }
-                  placeholder="Section title"
+                  placeholder="セクション名"
                 />
                 <textarea
                   id={`section-summary-${section.id}`}
@@ -219,13 +219,13 @@ export function AddBookDialog({ open, onClose }: AddBookDialogProps) {
                   onChange={(event) =>
                     handleSectionChange(section.id, 'summary', event.target.value)
                   }
-                  placeholder="Summaries, quotes, or references"
+                  placeholder="要約や引用、参考にしたいポイントなどを記入します。"
                 />
               </div>
             ))}
             {sections.length === 0 && (
               <div className="section-empty">
-                <p>No sections yet. Use “Add another section” to start a list.</p>
+                <p>セクションはまだありません。「セクションを追加」から作成しましょう。</p>
               </div>
             )}
           </div>

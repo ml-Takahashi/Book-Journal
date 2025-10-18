@@ -34,31 +34,31 @@ export function AddGenreDialog({ open, onClose }: AddGenreDialogProps) {
     <Dialog
       open={open}
       onClose={onClose}
-      title="Create a New Genre"
+      title="新しいジャンルを作成"
       footer={
         <>
           <button type="button" className="ghost" onClick={onClose}>
-            Cancel
+            キャンセル
           </button>
           <button type="submit" form="add-genre-form" className="primary">
-            Add Genre
+            ジャンルを追加
           </button>
         </>
       }
     >
       <form id="add-genre-form" onSubmit={handleSubmit} className="form-stack">
-        <label htmlFor="genre-name">Genre name</label>
+        <label htmlFor="genre-name">ジャンル名</label>
         <input
           id="genre-name"
           type="text"
           autoFocus
-          placeholder="e.g. Knowledge Management"
+          placeholder="例： ナレッジマネジメント"
           value={name}
           onChange={(event) => setName(event.target.value)}
           required
         />
 
-        <label htmlFor="genre-parent">Parent folder (optional)</label>
+        <label htmlFor="genre-parent">親フォルダー（任意）</label>
         <select
           id="genre-parent"
           value={parentId ?? ''}
@@ -66,7 +66,7 @@ export function AddGenreDialog({ open, onClose }: AddGenreDialogProps) {
             setParentId(event.target.value ? event.target.value : null)
           }
         >
-          <option value="">Top level</option>
+          <option value="">トップレベル</option>
           {genres.map((genre) => (
             <option key={genre.id} value={genre.id}>
               {genre.name}
@@ -74,8 +74,7 @@ export function AddGenreDialog({ open, onClose }: AddGenreDialogProps) {
           ))}
         </select>
         <p className="helper">
-          Genres build the folder structure for your library. You can nest them to
-          mirror how you think about topics.
+          ジャンルは本棚のフォルダー構造を作ります。階層化すれば、自分の頭の中の整理方法をそのまま再現できます。
         </p>
       </form>
     </Dialog>

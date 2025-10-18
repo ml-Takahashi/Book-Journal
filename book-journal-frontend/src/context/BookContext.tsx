@@ -98,7 +98,7 @@ function bookReducer(state: BookState, action: Action): BookState {
         .filter((section) => section.title.trim() || section.summary.trim())
         .map((section) => ({
           id: generateId(),
-          title: section.title.trim() || 'Untitled Section',
+          title: section.title.trim() || '無題のセクション',
           summary: section.summary.trim(),
         }));
 

@@ -88,8 +88,6 @@ export function AppLayout() {
     [selectedGenreId, genres],
   );
 
-  const totalBooks = filteredBooks.length;
-
   return (
     <>
       <div className="app-shell">
@@ -102,10 +100,8 @@ export function AppLayout() {
           <header className="app-header">
             <div className="header-left">
               <div>
-                <h1>Book Journal</h1>
-                <p>
-                  {totalBooks} {totalBooks === 1 ? 'book' : 'books'} in view
-                </p>
+                <h1>読書ジャーナル</h1>
+                <p>表示中: {filteredBooks.length}冊</p>
               </div>
             </div>
             <div className="header-actions">
@@ -113,7 +109,7 @@ export function AppLayout() {
                 <span className="material-symbol">search</span>
                 <input
                   type="search"
-                  placeholder="Search title, author, tags…"
+                  placeholder="タイトル・著者・タグで検索"
                   value={searchTerm}
                   onChange={(event) => setSearchTerm(event.target.value)}
                 />
@@ -123,7 +119,7 @@ export function AppLayout() {
                 type="button"
                 onClick={() => setBookDialogOpen(true)}
               >
-                ＋ Add Book
+                ＋ 本を追加
               </button>
             </div>
           </header>
