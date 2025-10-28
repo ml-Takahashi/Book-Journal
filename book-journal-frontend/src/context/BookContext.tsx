@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useReducer } from 'react';
 import { initialBooks, initialGenres } from '../data/initialData';
-import type { Book, BookSection, Genre } from '../types';
+import type { Book, BookChapter, BookSection, Genre } from '../types';
 import { generateId } from '../utils/id';
 
 interface BookState {
@@ -21,7 +21,11 @@ type Action =
         genreId: string;
         description: string;
         tags: string[];
-        sections: Array<Pick<BookSection, 'title' | 'summary'>>;
+        chapters: Array<
+          Pick<BookChapter, 'title' | 'summary'> & {
+            sections: Array<Pick<BookSection, 'title' | 'summary'>>;
+          }
+        >;
         coverColor?: string;
       };
     }
@@ -33,8 +37,8 @@ type Action =
       payload: {
         id: string;
         updates: Partial<
-          Omit<Book, 'id' | 'createdAt' | 'updatedAt' | 'sections'>
-        > & { sections?: BookSection[] };
+          Omit<Book, 'id' | 'createdAt' | 'updatedAt' | 'chapters'>
+        > & { chapters?: BookChapter[] };
       };
     };
 
@@ -47,7 +51,11 @@ interface BookContextValue {
     genreId: string;
     description: string;
     tags: string[];
-    sections: Array<Pick<BookSection, 'title' | 'summary'>>;
+    chapters: Array<
+      Pick<BookChapter, 'title' | 'summary'> & {
+        sections: Array<Pick<BookSection, 'title' | 'summary'>>;
+      }
+    >;
     coverColor?: string;
   }) => void;
   selectGenre: (id: string | null) => void;
@@ -56,8 +64,8 @@ interface BookContextValue {
   updateBook: (
     id: string,
     updates: Partial<
-      Omit<Book, 'id' | 'createdAt' | 'updatedAt' | 'sections'>
-    > & { sections?: BookSection[] },
+      Omit<Book, 'id' | 'createdAt' | 'updatedAt' | 'chapters'>
+    > & { chapters?: BookChapter[] },
   ) => void;
 }
 
@@ -94,13 +102,30 @@ function bookReducer(state: BookState, action: Action): BookState {
     case 'add-book': {
       const id = generateId();
       const timestamp = new Date().toISOString();
-      const sections: BookSection[] = action.payload.sections
-        .filter((section) => section.title.trim() || section.summary.trim())
-        .map((section) => ({
-          id: generateId(),
-          title: section.title.trim() || '無題のセクション',
-          summary: section.summary.trim(),
-        }));
+      const chapters: BookChapter[] = action.payload.chapters
+        .map((chapter) => {
+          const normalizedTitle = chapter.title.trim();
+          const normalizedSummary = chapter.summary.trim();
+          const sections: BookSection[] = chapter.sections
+            .filter((section) => section.title.trim() || section.summary.trim())
+            .map((section) => ({
+              id: generateId(),
+              title: section.title.trim() || '無題の節',
+              summary: section.summary.trim(),
+            }));
+
+          if (!normalizedTitle && !normalizedSummary && sections.length === 0) {
+            return null;
+          }
+
+          return {
+            id: generateId(),
+            title: normalizedTitle || '無題の章',
+            summary: normalizedSummary,
+            sections,
+          };
+        })
+        .filter((chapter): chapter is BookChapter => chapter !== null);
 
       const book: Book = {
         id,
@@ -109,7 +134,7 @@ function bookReducer(state: BookState, action: Action): BookState {
         genreId: action.payload.genreId,
         description: action.payload.description.trim(),
         tags: action.payload.tags.map((tag) => tag.trim()).filter(Boolean),
-        sections,
+        chapters,
         createdAt: timestamp,
         updatedAt: timestamp,
         coverColor:
@@ -145,12 +170,12 @@ function bookReducer(state: BookState, action: Action): BookState {
           return book;
         }
 
-        const nextSections = action.payload.updates.sections ?? book.sections;
+        const nextChapters = action.payload.updates.chapters ?? book.chapters;
 
         return {
           ...book,
           ...action.payload.updates,
-          sections: nextSections,
+          chapters: nextChapters,
           updatedAt: new Date().toISOString(),
         };
       });
@@ -179,7 +204,11 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
       genreId: string;
       description: string;
       tags: string[];
-      sections: Array<Pick<BookSection, 'title' | 'summary'>>;
+      chapters: Array<
+        Pick<BookChapter, 'title' | 'summary'> & {
+          sections: Array<Pick<BookSection, 'title' | 'summary'>>;
+        }
+      >;
       coverColor?: string;
     }) => {
       dispatch({ type: 'add-book', payload: input });
@@ -203,8 +232,8 @@ export function BookProvider({ children }: { children: React.ReactNode }) {
     (
       id: string,
       updates: Partial<
-        Omit<Book, 'id' | 'createdAt' | 'updatedAt' | 'sections'>
-      > & { sections?: BookSection[] },
+        Omit<Book, 'id' | 'createdAt' | 'updatedAt' | 'chapters'>
+      > & { chapters?: BookChapter[] },
     ) => {
       dispatch({ type: 'update-book', payload: { id, updates } });
     },

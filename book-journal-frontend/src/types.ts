@@ -10,13 +10,20 @@ export interface BookSection {
   summary: string;
 }
 
+export interface BookChapter {
+  id: string;
+  title: string;
+  summary: string;
+  sections: BookSection[];
+}
+
 export interface Book {
   id: string;
   title: string;
   author: string;
   genreId: string;
   description: string;
-  sections: BookSection[];
+  chapters: BookChapter[];
   createdAt: string;
   updatedAt: string;
   coverColor: string;

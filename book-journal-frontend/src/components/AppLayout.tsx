@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useBookContext } from '../context/BookContext';
 import type { Book } from '../types';
 import { getGenrePath } from '../utils/genreTree';
@@ -24,6 +24,7 @@ export function AppLayout() {
 
   const [isBookDialogOpen, setBookDialogOpen] = useState(false);
   const [isGenreDialogOpen, setGenreDialogOpen] = useState(false);
+  const [isDetailFullscreen, setDetailFullscreen] = useState(false);
 
   const descendants = useMemo(() => {
     if (!selectedGenreId) {
@@ -60,12 +61,19 @@ export function AppLayout() {
       .filter((book) => descendants.has(book.genreId))
       .filter((book) => {
         if (!normalizedTerm) return true;
+        const chapterTexts = book.chapters.flatMap((chapter) => [
+          `${chapter.title} ${chapter.summary}`,
+          ...chapter.sections.map(
+            (section) => `${section.title} ${section.summary}`,
+          ),
+        ]);
+
         const haystack = [
           book.title,
           book.author,
           book.description,
           ...book.tags,
-          ...book.sections.map((section) => `${section.title} ${section.summary}`),
+          ...chapterTexts,
         ]
           .join(' ')
           .toLowerCase();
@@ -82,6 +90,12 @@ export function AppLayout() {
     [books, selectedBookId],
   );
 
+  useEffect(() => {
+    if (!activeBook && isDetailFullscreen) {
+      setDetailFullscreen(false);
+    }
+  }, [activeBook, isDetailFullscreen]);
+
   const breadcrumbs = useMemo(
     () =>
       selectedGenreId ? getGenrePath(selectedGenreId, genres) : [],
@@ -90,12 +104,14 @@ export function AppLayout() {
 
   return (
     <>
-      <div className="app-shell">
-        <Sidebar
-          selectedGenreId={selectedGenreId}
-          onSelectGenre={selectGenre}
-          onCreateGenre={() => setGenreDialogOpen(true)}
-        />
+      <div className={`app-shell${isDetailFullscreen ? ' detail-fullscreen' : ''}`}>
+        {!isDetailFullscreen && (
+          <Sidebar
+            selectedGenreId={selectedGenreId}
+            onSelectGenre={selectGenre}
+            onCreateGenre={() => setGenreDialogOpen(true)}
+          />
+        )}
         <div className="app-main">
           <header className="app-header">
             <div className="header-left">
@@ -123,14 +139,24 @@ export function AppLayout() {
               </button>
             </div>
           </header>
-          <main className="app-content">
-            <BookGallery
-              books={filteredBooks}
-              selectedBookId={selectedBookId}
-              onSelectBook={selectBook}
-              onRequestCreate={() => setBookDialogOpen(true)}
+          <main
+            className={`app-content${isDetailFullscreen ? ' is-fullscreen' : ''}`}
+          >
+            {!isDetailFullscreen && (
+              <BookGallery
+                books={filteredBooks}
+                selectedBookId={selectedBookId}
+                onSelectBook={selectBook}
+                onRequestCreate={() => setBookDialogOpen(true)}
+              />
+            )}
+            <BookDetail
+              book={activeBook}
+              breadcrumbs={breadcrumbs}
+              isFullscreen={isDetailFullscreen}
+              onEnterFullscreen={() => setDetailFullscreen(true)}
+              onExitFullscreen={() => setDetailFullscreen(false)}
             />
-            <BookDetail book={activeBook} breadcrumbs={breadcrumbs} />
           </main>
         </div>
       </div>

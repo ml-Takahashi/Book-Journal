@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useBookContext } from '../../context/BookContext';
 import { generateId } from '../../utils/id';
+import { toSectionLabel } from '../../utils/sections';
 import { Dialog } from './Dialog';
 
 interface AddBookDialogProps {
@@ -13,6 +14,13 @@ interface SectionDraft {
   id: string;
   title: string;
   summary: string;
+}
+
+interface ChapterDraft {
+  id: string;
+  title: string;
+  summary: string;
+  sections: SectionDraft[];
 }
 
 const defaultAccentPalette = ['#6c5ce7', '#00cec9', '#fdcb6e', '#ff7675', '#0984e3'];
@@ -28,8 +36,13 @@ export function AddBookDialog({ open, onClose }: AddBookDialogProps) {
   const [description, setDescription] = useState('');
   const [tagsInput, setTagsInput] = useState('');
   const [coverColor, setCoverColor] = useState(defaultAccentPalette[0]);
-  const [sections, setSections] = useState<SectionDraft[]>([
-    { id: generateId(), title: '', summary: '' },
+  const [chapters, setChapters] = useState<ChapterDraft[]>([
+    {
+      id: generateId(),
+      title: '',
+      summary: '',
+      sections: [{ id: generateId(), title: '', summary: '' }],
+    },
   ]);
 
   const hasGenres = genres.length > 0;
@@ -45,28 +58,89 @@ export function AddBookDialog({ open, onClose }: AddBookDialogProps) {
         Math.floor(Math.random() * defaultAccentPalette.length)
       ],
     );
-    setSections([{ id: generateId(), title: '', summary: '' }]);
+    setChapters([
+      {
+        id: generateId(),
+        title: '',
+        summary: '',
+        sections: [{ id: generateId(), title: '', summary: '' }],
+      },
+    ]);
     setGenreId(selectedGenreId ?? genres[0]?.id ?? '');
   }, [open, selectedGenreId, genres]);
 
-  const handleSectionChange = (
-    id: string,
+  const handleChapterChange = (
+    chapterId: string,
     key: 'title' | 'summary',
     value: string,
   ) => {
-    setSections((prev) =>
-      prev.map((section) =>
-        section.id === id ? { ...section, [key]: value } : section,
+    setChapters((prev) =>
+      prev.map((chapter) =>
+        chapter.id === chapterId ? { ...chapter, [key]: value } : chapter,
       ),
     );
   };
 
-  const handleRemoveSection = (id: string) => {
-    setSections((prev) => prev.filter((section) => section.id !== id));
+  const handleRemoveChapter = (chapterId: string) => {
+    setChapters((prev) => prev.filter((chapter) => chapter.id !== chapterId));
   };
 
-  const handleAddSection = () => {
-    setSections((prev) => [...prev, { id: generateId(), title: '', summary: '' }]);
+  const handleAddChapter = () => {
+    setChapters((prev) => [
+      ...prev,
+      {
+        id: generateId(),
+        title: '',
+        summary: '',
+        sections: [{ id: generateId(), title: '', summary: '' }],
+      },
+    ]);
+  };
+
+  const handleSectionChange = (
+    chapterId: string,
+    sectionId: string,
+    key: 'title' | 'summary',
+    value: string,
+  ) => {
+    setChapters((prev) =>
+      prev.map((chapter) => {
+        if (chapter.id !== chapterId) return chapter;
+        return {
+          ...chapter,
+          sections: chapter.sections.map((section) =>
+            section.id === sectionId ? { ...section, [key]: value } : section,
+          ),
+        };
+      }),
+    );
+  };
+
+  const handleAddSection = (chapterId: string) => {
+    setChapters((prev) =>
+      prev.map((chapter) => {
+        if (chapter.id !== chapterId) return chapter;
+        return {
+          ...chapter,
+          sections: [
+            ...chapter.sections,
+            { id: generateId(), title: '', summary: '' },
+          ],
+        };
+      }),
+    );
+  };
+
+  const handleRemoveSection = (chapterId: string, sectionId: string) => {
+    setChapters((prev) =>
+      prev.map((chapter) => {
+        if (chapter.id !== chapterId) return chapter;
+        return {
+          ...chapter,
+          sections: chapter.sections.filter((section) => section.id !== sectionId),
+        };
+      }),
+    );
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -84,9 +158,13 @@ export function AddBookDialog({ open, onClose }: AddBookDialogProps) {
       genreId,
       description,
       tags,
-      sections: sections.map((section) => ({
-        title: section.title,
-        summary: section.summary,
+      chapters: chapters.map((chapter) => ({
+        title: chapter.title,
+        summary: chapter.summary,
+        sections: chapter.sections.map((section) => ({
+          title: section.title,
+          summary: section.summary,
+        })),
       })),
       coverColor,
     });
@@ -183,49 +261,111 @@ export function AddBookDialog({ open, onClose }: AddBookDialogProps) {
 
           <div className="section-controls">
             <div className="controls-header">
-              <h3>初期セクション</h3>
-              <button type="button" className="ghost" onClick={handleAddSection}>
-                ＋ セクションを追加
+              <h3>初期章構成</h3>
+              <button type="button" className="ghost" onClick={handleAddChapter}>
+                ＋ 章を追加
               </button>
             </div>
-            {sections.map((section, index) => (
-              <div key={section.id} className="section-draft">
+            {chapters.map((chapter, chapterIndex) => (
+              <div key={chapter.id} className="chapter-draft">
                 <div className="field-inline">
-                  <label htmlFor={`section-title-${section.id}`}>
-                    セクション {index + 1}
+                  <label htmlFor={`chapter-title-${chapter.id}`}>
+                    第{chapterIndex + 1}章
                   </label>
                   <button
                     type="button"
                     className="icon-button"
-                    onClick={() => handleRemoveSection(section.id)}
-                    aria-label="セクションを削除"
+                    onClick={() => handleRemoveChapter(chapter.id)}
+                    aria-label="章を削除"
                   >
                     <span className="material-symbol">delete</span>
                   </button>
                 </div>
                 <input
-                  id={`section-title-${section.id}`}
+                  id={`chapter-title-${chapter.id}`}
                   type="text"
-                  value={section.title}
+                  value={chapter.title}
                   onChange={(event) =>
-                    handleSectionChange(section.id, 'title', event.target.value)
+                    handleChapterChange(chapter.id, 'title', event.target.value)
                   }
-                  placeholder="セクション名"
+                  placeholder="章のタイトル"
                 />
                 <textarea
-                  id={`section-summary-${section.id}`}
+                  id={`chapter-summary-${chapter.id}`}
                   rows={3}
-                  value={section.summary}
+                  value={chapter.summary}
                   onChange={(event) =>
-                    handleSectionChange(section.id, 'summary', event.target.value)
+                    handleChapterChange(chapter.id, 'summary', event.target.value)
                   }
-                  placeholder="要約や引用、参考にしたいポイントなどを記入します。"
+                  placeholder="章の概要や目的を記入します。"
                 />
+
+                <div className="chapter-sections">
+                  <div className="controls-header chapter-sections-controls">
+                    <button
+                      type="button"
+                      className="ghost"
+                      onClick={() => handleAddSection(chapter.id)}
+                    >
+                      ＋ 節を追加
+                    </button>
+                  </div>
+                  {chapter.sections.map((section, sectionIndex) => (
+                    <div key={section.id} className="section-draft">
+                      <div className="field-inline">
+                        <label htmlFor={`section-title-${section.id}`}>
+                          {toSectionLabel(sectionIndex + 1)}
+                        </label>
+                        <button
+                          type="button"
+                          className="icon-button"
+                          onClick={() => handleRemoveSection(chapter.id, section.id)}
+                          aria-label="節を削除"
+                        >
+                          <span className="material-symbol">delete</span>
+                        </button>
+                      </div>
+                      <input
+                        id={`section-title-${section.id}`}
+                        type="text"
+                        value={section.title}
+                        onChange={(event) =>
+                          handleSectionChange(
+                            chapter.id,
+                            section.id,
+                            'title',
+                            event.target.value,
+                          )
+                        }
+                        placeholder="節のタイトル"
+                      />
+                      <textarea
+                        id={`section-summary-${section.id}`}
+                        rows={3}
+                        value={section.summary}
+                        onChange={(event) =>
+                          handleSectionChange(
+                            chapter.id,
+                            section.id,
+                            'summary',
+                            event.target.value,
+                          )
+                        }
+                        placeholder="要約や引用、参考にしたいポイントなどを記入します。"
+                      />
+                    </div>
+                  ))}
+                  {chapter.sections.length === 0 && (
+                    <div className="section-empty">
+                      <p>節はまだありません。「節を追加」から作成しましょう。</p>
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
-            {sections.length === 0 && (
+            {chapters.length === 0 && (
               <div className="section-empty">
-                <p>セクションはまだありません。「セクションを追加」から作成しましょう。</p>
+                <p>章はまだありません。「章を追加」から作成しましょう。</p>
               </div>
             )}
           </div>
